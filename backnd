@@ -1,0 +1,51 @@
+// Backend (ExpressJS) - server.js
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const authRoutes = require('./routes/auth');
+const projectRoutes = require('./routes/projects');
+const paymentRoutes = require('./routes/payments');
+
+dotenv.config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log('MongoDB Connected'))
+.catch(err => console.error(err));
+
+app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/payments', paymentRoutes);
+
+app.listen(5000, () => console.log('Server running on port 5000'));
+
+// Frontend (React) - App.jsx
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import ProjectDetail from './pages/ProjectDetail';
+import CreateProject from './pages/CreateProject';
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/project/:id" element={<ProjectDetail />} />
+        <Route path="/create" element={<CreateProject />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
